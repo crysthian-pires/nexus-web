@@ -128,6 +128,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {(() => {
+            const token = Cookies.get("accessToken");
+            const payload = token ? parseJwt(token) : null;
+            return payload?.role === "ADMIN" ? (
+              <button
+                onClick={() => router.push("/admin")}
+                className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg py-2.5 transition cursor-pointer mb-3"
+              >
+                Gerenciar usuários
+              </button>
+            ) : null;
+          })()}
+
           <div className="pt-4 border-t border-gray-800">
             <button
               onClick={() => router.push("/perfil")}

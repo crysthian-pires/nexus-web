@@ -49,8 +49,8 @@ const navItems: NavItem[] = [
   },
   {
     label: "Clientes",
+    href: "/clientes",
     icon: "👥",
-    soon: true,
   },
   {
     label: "Agendamentos",

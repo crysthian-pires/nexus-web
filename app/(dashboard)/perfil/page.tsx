@@ -100,18 +100,6 @@ export default function PerfilPage() {
 
   return (
     <div className="min-h-screen bg-gray-950">
-      {/* Header */}
-      <header className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-white font-bold text-xl">Nexus</h1>
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="text-sm text-gray-400 hover:text-white transition cursor-pointer"
-        >
-          ← Voltar
-        </button>
-      </header>
-
-      {/* Conteúdo */}
       <main className="max-w-2xl mx-auto px-6 py-10">
         <h2 className="text-white text-2xl font-bold mb-6">Editar Perfil</h2>
 

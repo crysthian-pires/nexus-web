@@ -44,8 +44,8 @@ const navItems: NavItem[] = [
   },
   {
     label: "Ordens de Serviço",
+    href: "/ordens",
     icon: "🔧",
-    soon: true,
   },
   {
     label: "Clientes",

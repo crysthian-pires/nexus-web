@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { authService } from "@/services/auth.service";
+import { useEffect, useState } from "react";
 
 function parseJwt(token: string) {
   try {
@@ -37,8 +39,8 @@ const navItems: NavItem[] = [
   },
   {
     label: "Estoque",
+    href: "/estoque",
     icon: "📦",
-    soon: true,
   },
   {
     label: "Ordens de Serviço",
@@ -59,9 +61,27 @@ const navItems: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const token = Cookies.get("accessToken");
-  const payload = token ? parseJwt(token) : null;
-  const isAdmin = payload?.role === "ADMIN";
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    const token = Cookies.get("accessToken");
+    const payload = token ? parseJwt(token) : null;
+    setIsAdmin(payload?.role === "ADMIN");
+    setUserName(payload?.name || "");
+    setUserEmail(payload?.sub || "");
+    setMounted(true);
+  }, []);
+
+  async function handleLogout() {
+    await authService.logout();
+    router.push("/login");
+  }
+
+  if (!mounted) return null;
 
   return (
     <aside className="w-64 min-h-screen bg-gray-900 border-r border-gray-800 flex flex-col">
@@ -142,8 +162,8 @@ export default function Sidebar() {
 
       <div className="px-3 py-4 border-t border-gray-800">
         <div className="px-3 py-2">
-          <p className="text-gray-500 text-xs">{payload?.name}</p>
-          <p className="text-gray-600 text-xs">{payload?.sub}</p>
+          <p className="text-gray-500 text-xs">{userName}</p>
+          <p className="text-gray-600 text-xs">{userEmail}</p>
         </div>
       </div>
     </aside>

@@ -54,8 +54,8 @@ const navItems: NavItem[] = [
   },
   {
     label: "Agendamentos",
+    href: "/agendamentos",
     icon: "📅",
-    soon: true,
   },
 ];
 

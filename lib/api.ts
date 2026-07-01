@@ -2,12 +2,11 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
-
 
 api.interceptors.request.use((config) => {
   const token = Cookies.get("accessToken");
@@ -16,7 +15,6 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
-
 
 api.interceptors.response.use(
   (response) => response,
@@ -36,8 +34,8 @@ api.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          "http://localhost:8080/auth/refresh",
-          { refreshToken }
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+          { refreshToken },
         );
         Cookies.set("accessToken", data.accessToken);
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
@@ -51,7 +49,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

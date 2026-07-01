@@ -28,7 +28,7 @@ export default function EstoquePage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [error, setError] = useState("");
@@ -52,7 +52,9 @@ export default function EstoquePage() {
       router.push("/login");
       return;
     }
-    setIsAdmin(payload.role === "ADMIN");
+    // Criar e editar: liberado para USER e ADMIN.
+    // Desativar (delete): apenas ADMIN, conforme a matriz de permissões do backend.
+    setCanDelete(payload.role === "ADMIN");
     loadProducts();
   }, [router]);
 
@@ -146,14 +148,12 @@ export default function EstoquePage() {
       <main className="max-w-5xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-white text-2xl font-bold">Estoque</h2>
-          {isAdmin && (
-            <button
-              onClick={() => openForm()}
-              className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg px-4 py-2 transition cursor-pointer"
-            >
-              + Novo produto
-            </button>
-          )}
+          <button
+            onClick={() => openForm()}
+            className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg px-4 py-2 transition cursor-pointer"
+          >
+            + Novo produto
+          </button>
         </div>
 
         {error && (
@@ -326,22 +326,22 @@ export default function EstoquePage() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      {isAdmin && (
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => openForm(product)}
-                            className="text-xs text-blue-400 hover:text-blue-300 transition cursor-pointer"
-                          >
-                            Editar
-                          </button>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => openForm(product)}
+                          className="text-xs text-blue-400 hover:text-blue-300 transition cursor-pointer"
+                        >
+                          Editar
+                        </button>
+                        {canDelete && (
                           <button
                             onClick={() => handleDeactivate(product.id)}
                             className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer"
                           >
                             Desativar
                           </button>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

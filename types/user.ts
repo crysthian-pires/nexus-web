@@ -6,6 +6,7 @@ export interface User {
   birthDate?: string;
   active: boolean;
   createdAt: string;
+  role: "USER" | "ADMIN";
 }
 
 export interface AuthResponse {

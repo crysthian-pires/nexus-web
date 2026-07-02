@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authService } from "@/services/auth.service";
+import { getErrorMessage } from "@/lib/getErrorMessage";
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -22,9 +23,8 @@ export default function CadastroPage() {
       await authService.register(name, email, password);
       await authService.login(email, password);
       router.push("/dashboard");
-    } catch (err: any) {
-      const message = err.response?.data?.error;
-      setError(message || "Erro ao criar conta. Tente novamente.");
+    } catch (err) {
+      setError(getErrorMessage(err, "Erro ao criar conta. Tente novamente."));
     } finally {
       setLoading(false);
     }
@@ -33,7 +33,6 @@ export default function CadastroPage() {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white tracking-tight">
@@ -45,7 +44,6 @@ export default function CadastroPage() {
         {/* Card */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
-
             {/* Nome */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">
@@ -107,13 +105,15 @@ export default function CadastroPage() {
             >
               {loading ? "Criando conta..." : "Criar conta"}
             </button>
-
           </form>
 
           {/* Link login */}
           <p className="text-center text-gray-500 text-sm mt-6">
             Já tem conta?{" "}
-            <Link href="/login" className="text-blue-400 hover:text-blue-300 transition">
+            <Link
+              href="/login"
+              className="text-blue-400 hover:text-blue-300 transition"
+            >
               Entrar
             </Link>
           </p>

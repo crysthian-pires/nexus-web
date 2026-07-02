@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import api from "@/lib/api";
+import { getErrorMessage } from "@/lib/getErrorMessage";
 
 interface Customer {
   id: number;
@@ -145,7 +146,7 @@ export default function OrdensPage() {
           totalValue: totalValue ? parseFloat(totalValue) : undefined,
           notes: notes || undefined,
         });
-        setSuccess("OS atualizada com sucesso!");
+        setSuccess("Ordem de Serviço atualizada com sucesso!");
       } else {
         await api.post("/service-orders", {
           customerId: parseInt(customerId),
@@ -153,12 +154,12 @@ export default function OrdensPage() {
           totalValue: totalValue ? parseFloat(totalValue) : undefined,
           notes: notes || undefined,
         });
-        setSuccess("OS criada com sucesso!");
+        setSuccess("Ordem de Serviço criada com sucesso!");
       }
       await loadOrders(filterStatus || undefined);
       closeForm();
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Erro ao salvar OS.");
+    } catch (err) {
+      setError(getErrorMessage(err, "Erro ao salvar Ordem de Serviço."));
     } finally {
       setSaving(false);
     }

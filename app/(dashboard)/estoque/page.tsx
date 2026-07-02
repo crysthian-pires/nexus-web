@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import api from "@/lib/api";
+import { getErrorMessage } from "@/lib/getErrorMessage";
+import { useSession } from "@/hooks/useSession";
 
 interface Product {
   id: number;
@@ -16,19 +18,11 @@ interface Product {
   createdAt: string;
 }
 
-function parseJwt(token: string) {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch {
-    return null;
-  }
-}
-
 export default function EstoquePage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [canDelete, setCanDelete] = useState(false);
+  const { isAdmin } = useSession();
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [error, setError] = useState("");
@@ -47,14 +41,6 @@ export default function EstoquePage() {
       router.push("/login");
       return;
     }
-    const payload = parseJwt(token);
-    if (!payload) {
-      router.push("/login");
-      return;
-    }
-    // Criar e editar: liberado para USER e ADMIN.
-    // Desativar (delete): apenas ADMIN, conforme a matriz de permissões do backend.
-    setCanDelete(payload.role === "ADMIN");
     loadProducts();
   }, [router]);
 
@@ -118,8 +104,8 @@ export default function EstoquePage() {
       }
       await loadProducts();
       closeForm();
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Erro ao salvar produto.");
+    } catch (err) {
+      setError(getErrorMessage(err, "Erro ao salvar produto."));
     } finally {
       setSaving(false);
     }
@@ -333,7 +319,7 @@ export default function EstoquePage() {
                         >
                           Editar
                         </button>
-                        {canDelete && (
+                        {isAdmin && (
                           <button
                             onClick={() => handleDeactivate(product.id)}
                             className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer"

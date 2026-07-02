@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import api from "@/lib/api";
+import { getErrorMessage } from "@/lib/getErrorMessage";
 
 interface Customer {
   id: number;
@@ -122,8 +123,8 @@ export default function ClientesPage() {
       }
       await loadCustomers();
       closeForm();
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Erro ao salvar cliente.");
+    } catch (err) {
+      setError(getErrorMessage(err, "Erro ao salvar cliente."));
     } finally {
       setSaving(false);
     }

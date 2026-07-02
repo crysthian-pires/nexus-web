@@ -2,17 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { authService } from "@/services/auth.service";
-import { useEffect, useState } from "react";
-
-function parseJwt(token: string) {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch {
-    return null;
-  }
-}
+import { useSession } from "@/hooks/useSession";
 
 interface NavItem {
   label: string;
@@ -62,26 +53,13 @@ const navItems: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-
-  useEffect(() => {
-    const token = Cookies.get("accessToken");
-    const payload = token ? parseJwt(token) : null;
-    setIsAdmin(payload?.role === "ADMIN");
-    setUserName(payload?.name || "");
-    setUserEmail(payload?.sub || "");
-    setMounted(true);
-  }, []);
-
+  const session = useSession();
   async function handleLogout() {
     await authService.logout();
     router.push("/login");
   }
 
-  if (!mounted) return null;
+  const { isAdmin, userName, userEmail } = session;
 
   return (
     <aside className="w-64 min-h-screen bg-gray-900 border-r border-gray-800 flex flex-col">
@@ -161,9 +139,18 @@ export default function Sidebar() {
       </nav>
 
       <div className="px-3 py-4 border-t border-gray-800">
-        <div className="px-3 py-2">
-          <p className="text-gray-500 text-xs">{userName}</p>
-          <p className="text-gray-600 text-xs">{userEmail}</p>
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="min-w-0">
+            <p className="text-gray-500 text-xs truncate">{userName}</p>
+            <p className="text-gray-600 text-xs truncate">{userEmail}</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            title="Sair"
+            className="text-gray-500 hover:text-red-400 transition cursor-pointer shrink-0 ml-2"
+          >
+            🚪
+          </button>
         </div>
       </div>
     </aside>

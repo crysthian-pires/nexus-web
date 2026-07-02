@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import { authService } from "@/services/auth.service";
 import { userService } from "@/services/user.service";
 import { User } from "@/types/user";
+import { getErrorMessage } from "@/lib/getErrorMessage";
 
 export default function PerfilPage() {
   const router = useRouter();
@@ -93,8 +94,8 @@ export default function PerfilPage() {
       hydrateForm(refreshed);
       setSuccess("Perfil atualizado com sucesso!");
       setEditing(false);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Erro ao atualizar perfil.");
+    } catch (err) {
+      setError(getErrorMessage(err, "Erro ao atualizar perfil."));
     } finally {
       setSaving(false);
     }
